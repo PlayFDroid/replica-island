@@ -527,6 +527,12 @@ public class Game extends AllocationGuard {
 		BaseObject.sSystemRegistry.hudSystem.setMovementSliderMode(onScreenControls);
 	}
 	
+	public void setScreenRotation(int rotation) {
+		if (BaseObject.sSystemRegistry.inputSystem != null) {
+			BaseObject.sSystemRegistry.inputSystem.setScreenRotation(rotation);
+		}
+	}
+	
 	public void setSafeMode(boolean safe) {
 		mSurfaceView.setSafeMode(safe);
 	}

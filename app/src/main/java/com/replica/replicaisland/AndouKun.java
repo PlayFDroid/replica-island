@@ -80,6 +80,8 @@ public class AndouKun extends Activity implements SensorEventListener {
     private int mDifficulty = 1;
     private boolean mExtrasUnlocked;
     private SensorManager mSensorManager;
+    private final float[] mRotationMatrix = new float[9];
+    private final float[] mOrientationAngles = new float[3];
     private SharedPreferences.Editor mPrefsEditor;
     private long mLastTouchTime = 0L;
     private long mLastRollTime = 0L;
@@ -318,14 +320,23 @@ public class AndouKun extends Activity implements SensorEventListener {
         mGame.setControlOptions(clickAttack, tiltControls, tiltSensitivity, movementSensitivity, onScreenControls);
         mGame.setKeyConfig(leftKey, rightKey, jumpKey, attackKey);
         mGame.setSafeMode(safeMode);
+
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        mGame.setScreenRotation(rotation);
         
         if (mSensorManager != null) {
-            Sensor orientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-            if (orientation != null) {
-                mSensorManager.registerListener(this, 
-                    orientation,
-                    SensorManager.SENSOR_DELAY_GAME,
-                    null);
+            Sensor sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+            if (sensor == null) {
+                sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+            }
+            if (sensor == null) {
+                sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+            }
+            if (sensor == null) {
+                sensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            }
+            if (sensor != null) {
+                mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_GAME);
             }
         }
     }
@@ -728,14 +739,29 @@ public class AndouKun extends Activity implements SensorEventListener {
 
 
     public void onSensorChanged(SensorEvent event) {
-       synchronized (this) {
-           if (event.sensor.getType() == Sensor.TYPE_ORIENTATION) {
-               final float x = event.values[1];
-               final float y = event.values[2];
-               final float z = event.values[0];
-               mGame.onOrientationEvent(x, y, z);
-           }
-       }
+        synchronized (this) {
+            final int type = event.sensor.getType();
+            if (type == Sensor.TYPE_GAME_ROTATION_VECTOR || type == Sensor.TYPE_ROTATION_VECTOR) {
+                SensorManager.getRotationMatrixFromVector(mRotationMatrix, event.values);
+                SensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
+                final float pitch = (float) Math.toDegrees(mOrientationAngles[1]);
+                final float roll = (float) Math.toDegrees(mOrientationAngles[2]);
+                final float azimuth = (float) Math.toDegrees(mOrientationAngles[0]);
+                mGame.onOrientationEvent(pitch, roll, azimuth);
+            } else if (type == Sensor.TYPE_ORIENTATION) {
+                final float x = event.values[1];
+                final float y = event.values[2];
+                final float z = event.values[0];
+                mGame.onOrientationEvent(x, y, z);
+            } else if (type == Sensor.TYPE_ACCELEROMETER) {
+                final float ax = event.values[0];
+                final float ay = event.values[1];
+                final float az = event.values[2];
+                final float pitch = (float) Math.toDegrees(Math.atan2(ay, az));
+                final float roll = (float) Math.toDegrees(Math.atan2(-ax, Math.sqrt(ay * ay + az * az)));
+                mGame.onOrientationEvent(pitch, roll, 0.0f);
+            }
+        }
     }
     
     @Override

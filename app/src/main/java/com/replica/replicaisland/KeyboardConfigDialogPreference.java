@@ -167,19 +167,14 @@ public class KeyboardConfigDialogPreference extends DialogPreference implements 
 	
 	private View getConfigViewById(int id) {
 		View config = null;
-		switch(id) {
-		case R.id.key_left:
+		if (id == R.id.key_left) {
 			config = mLeftBorder;
-			break;
-		case R.id.key_right:
+		} else if (id == R.id.key_right) {
 			config = mRightBorder;
-			break;
-		case R.id.key_jump:
+		} else if (id == R.id.key_jump) {
 			config = mJumpBorder;
-			break;
-		case R.id.key_attack:
+		} else if (id == R.id.key_attack) {
 			config = mAttackBorder;
-			break;
 		}
 		
 		return config;
@@ -212,23 +207,18 @@ public class KeyboardConfigDialogPreference extends DialogPreference implements 
 		boolean eatKey = false;
 		if (mListeningId != 0) {
 			eatKey = true;
-			switch (mListeningId) {
-			case R.id.key_left:
+			if (mListeningId == R.id.key_left) {
 				mLeftText.setText(getKeyLabel(keyCode));
 				mLeftKeyCode = keyCode;
-				break;
-			case R.id.key_right:
+			} else if (mListeningId == R.id.key_right) {
 				mRightText.setText(getKeyLabel(keyCode));
 				mRightKeyCode = keyCode;
-				break;
-			case R.id.key_jump:
+			} else if (mListeningId == R.id.key_jump) {
 				mJumpText.setText(getKeyLabel(keyCode));
 				mJumpKeyCode = keyCode;
-				break;
-			case R.id.key_attack:
+			} else if (mListeningId == R.id.key_attack) {
 				mAttackText.setText(getKeyLabel(keyCode));
 				mAttackKeyCode = keyCode;
-				break;
 			}
 			
 			selectId(0);	// deselect the current config box;

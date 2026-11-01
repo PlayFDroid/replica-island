@@ -91,11 +91,17 @@ public class GhostComponent extends GameComponent {
                 
                 if (mUseOrientationSensor) {
                 	final InputXY tilt = input.getTilt();
+                	final InputXY dpad = input.getDirectionalPad();
+                	float vx = tilt.getX();
+                	float vy = tilt.getY();
+                	if (dpad != null && dpad.getPressed()) {
+                		vx = dpad.getX();
+                	}
                     parentObject.getTargetVelocity().x = 
-                    	tilt.getX() * mMovementSpeed;
+                    	vx * mMovementSpeed;
                     
                     parentObject.getTargetVelocity().y = 
-                    	tilt.getY() * mMovementSpeed;
+                    	vy * mMovementSpeed;
                    
                     parentObject.getAcceleration().x = mAcceleration;
                     parentObject.getAcceleration().y = mAcceleration; 

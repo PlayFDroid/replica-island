@@ -1,2 +1,11 @@
-bin/
-gen/
+*.iml
+.gradle
+local.properties
+.idea/
+.DS_Store
+build/
+**/build/
+*.apk
+*.aab
+*.jks
+*.keystore
