@@ -76,9 +76,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            replica-island-release.apk
-            app/build/outputs/apk/debug/*.apk
+          files: replica-island-release.apk
           generate_release_notes: true
 
       - name: Trigger Central F-Droid Index Rebuild (On Tag Only)
